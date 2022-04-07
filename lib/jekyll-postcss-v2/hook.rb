@@ -36,7 +36,7 @@ module PostCssV2
   end
 end
 
-Jekyll::Hooks.register :site, :post_write do |page|
+Jekyll::Hooks.register [:pages, :documents], :post_write do |page|
   if %r!\.css$! =~ page.url
     engine = PostCssV2::Engine.new(page.site.source)
     engine.process(page)
