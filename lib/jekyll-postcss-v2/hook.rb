@@ -36,28 +36,9 @@ module PostCssV2
   end
 end
 
-Jekyll::Hooks.register :site, :post_write do |site|
-  site.pages do |page|
-    if %r!\.css$! =~ page.url
-      engine = PostCssV2::Engine.new(page.site.source)
-      engine.process(page)
-    end
-  end
-end
-
-
-
 Jekyll::Hooks.register(:site, :post_write) do |site|
-  if Jekyll.env == "production"
-    raise PurgecssNotFoundError unless File.file?("./node_modules/.bin/purgecss")
-
-    raise PurgecssRuntimeError unless system(
-      "./node_modules/.bin/purgecss " \
-      "--config ./purgecss.config.js " \
-      "--output #{site.config.fetch("destination")}/#{site.config.fetch("css_dir", "css")}/"
-    )
+  if %r!\.css$! =~ page.url
+    engine = PostCssV2::Engine.new(page.site.source)
+    engine.process(site)
   end
 end
-
-class PurgecssNotFoundError < RuntimeError; end
-class PurgecssRuntimeError < RuntimeError; end
