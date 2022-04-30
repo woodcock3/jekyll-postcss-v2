@@ -27,7 +27,7 @@ module PostCssV2
       end
     end
 
-    def process(site)
+    def process(page)
       file_path = Pathname.new(page.site.dest + page.url)
       postcss_command = `#{@script} #{file_path} -r --config #{@config}`
       Jekyll.logger.info "PostCSS v2:",
@@ -36,9 +36,9 @@ module PostCssV2
   end
 end
 
-Jekyll::Hooks.register(:site, :post_write) do |site|
+Jekyll::Hooks.register :pages, :post_write do |page|
   if %r!\.css$! =~ page.url
     engine = PostCssV2::Engine.new(page.site.source)
-    engine.process(site)
+    engine.process(page)
   end
 end
